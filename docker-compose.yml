@@ -13,7 +13,7 @@ services:
       - DB_PORT=5432
       - DB_USER=myuser
       - DB_PASSWORD=mypassword
-      - DB_DATABASE=AulaDigital  # Cambia aquí
+      - DB_DATABASE=AulaDigital
     depends_on:
       - db
     volumes:
@@ -35,13 +35,26 @@ services:
     networks:
       - my-network
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html   # Asegúrate de que ./frontend/dist tenga el build de tu app
+      - ./nginx.conf:/etc/nginx/nginx.conf      # Aquí se monta la configuración de Nginx
+    depends_on:
+      - frontend
+    networks:
+      - my-network
+
   db:
     image: postgres:13
     container_name: db
     environment:
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=mypassword
-      - POSTGRES_DB=AulaDigital  
+      - POSTGRES_DB=AulaDigital
     ports:
       - "5432:5432"
     volumes:
