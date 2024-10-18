@@ -1,0 +1,57 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+      - DB_DATABASE=AulaDigital  # Cambia aquí
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/usr/src/app
+    networks:
+      - my-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/usr/src/app
+    networks:
+      - my-network
+
+  db:
+    image: postgres:13
+    container_name: db
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=AulaDigital  
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+volumes:
+  db-data:
+
+networks:
+  my-network:
+    driver: bridge
